@@ -27,9 +27,9 @@ Destruct: (self: Destructor) -> ()                            -- Destructs all <
 
 `Destructor.Destruct` uses a **function pool map** (a dictionary of destructors indexed by type name) instead of a traditional `if-elseif` chain, resulting in more consistent compute times across supported types.
 
-You can also schedule callbacks to execute during destruction by calling `Add` with a function and its arguments.
+You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its arguments.
 
-Additionally, the class **destructs Tweens** by calling `Cancel` before `Destroy`.
+The class **destructs Tweens** by calling `Tween.Cancel` before `Instance.Destroy`.
 
 ---
 
