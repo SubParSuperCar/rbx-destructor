@@ -1,6 +1,6 @@
 # rbx-destructor
 
-A **Lua*u* (Roblox)** Object-Oriented class for destructing values of the following supported types:  
+A simple and useful **Lua*u* (Roblox)** Object-Oriented class for **destructing values** of the following supported types:  
 - `Function`
 - `Dictionary (OOP)`*
 - `Thread`
@@ -11,7 +11,7 @@ A **Lua*u* (Roblox)** Object-Oriented class for destructing values of the follow
 
 ## API
 
-The API schema comprises **5 members**:
+The **API schema** comprises **5 members**:
 
 ```lua
 IsDestructor: (value: any) -> boolean                         -- Returns a <strong>boolean</strong> indicating whether <code>Value</code> is a <strong>Destructor</strong>.
@@ -25,12 +25,16 @@ Destruct: (self: Destructor) -> ()                            -- Destructs all <
 
 ## Notes
 
-`Destructor.Destruct` uses a **function pool map** (a dictionary of destructors indexed by type name) instead of a traditional `if-elseif` chain, resulting in more consistent compute times across supported types.
+`Destructor.Destruct` uses a **function pool map** (a dictionary of destructors indexed by type name) rather than an `if-elseif` chain. This ensures more consistent compute times across supported types.  
 
-You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its arguments.
+You can **schedule callbacks** to execute during destruction by calling `Destructor.Add` with a function and its arguments.  
 
-The class **destructs Tweens** by calling `Tween.Cancel` before `Instance.Destroy`.
+The class also **destructs Tweens** by calling `Tween.Cancel` before `Instance.Destroy`.  
+
+This module was **inspired by** similar alternatives like [**Maid**](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [**Janitor**](https://github.com/howmanysmall/Janitor), and [**Trove**](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau), but written as a spin-off to fit my own needs.  
+
+> **Note:** The class was **never benchmarked**. Microseconds weren't a priority during writing. If you have optimizations, please submit a pull request.
 
 ---
 
-\*Dictionaries are destructed by invoking their `Destroy` or `Destruct` key if it exists and is a function.
+*Dictionaries are destructed by invoking their `Destroy` or `Destruct` key if it exists and is a function.
