@@ -29,7 +29,7 @@ Destruct: (self: Destructor) -> ()                            -- Destructs all <
 
 You can also schedule callbacks to execute during destruction by calling `Add` with a function and its arguments.
 
-Additionally, the class automatically **destructs Tweens** by calling `Cancel` before `Destroy`.
+Additionally, the class **destructs Tweens** by calling `Cancel` before `Destroy`.
 
 ---
 
