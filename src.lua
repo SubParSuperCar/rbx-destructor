@@ -1,4 +1,4 @@
-e--!strict
+--!strict
 --!native
 local Destructor = {} :: DestructorImplementation
 Destructor.__index = Destructor
