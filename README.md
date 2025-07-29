@@ -3,7 +3,7 @@
 ## Description
 
 A simple and useful **Lua*u* (Roblox)** Object-Oriented class for **destructing values** of the following supported types:
-- `Function`
+- `Function (Callback)`
 - `Dictionary (OOP)`*
 - `Thread`
 - `RBXScriptConnection`
