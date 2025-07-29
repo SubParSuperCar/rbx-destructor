@@ -23,6 +23,24 @@ Destruct: (self: Destructor) -> ()                            -- Destructs all <
 
 ---
 
+## Notes
+
+`Destructor.Destruct` uses a **function pool map** (a dictionary of destructors indexed by type name) rather than an `if-elseif` chain. This ensures more consistent compute times across supported types.
+
+You can **schedule callbacks** to execute during destruction by calling `Destructor.Add` with a function and its arguments.
+
+**Tweens** are destructed by calling `Tween:Cancel()` before `Instance:Destroy()`.
+
+The class was **inspired by** similar alternatives like [**Maid**](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [**Janitor**](https://github.com/howmanysmall/Janitor), and [**Trove**](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau), but written around a year and a half ago as a spin-off to fit my own needs.
+
+> **Note:** This module was **never benchmarked**. Microseconds weren't a priority during writing. If you have optimizations, please submit a pull request.
+
+---
+
+*Dictionaries are destructed by invoking their `Destroy` or `Destruct` key with the dictionary as the argument if it exists and is a function.
+
+---
+
 ## Example
 
 Below is a **code excerpt** for a box selection tool where **Destructor** is used heavily:
@@ -98,21 +116,3 @@ local enabledChangedDestructor = Destructor.new();
 	end))
 end)
 ```
-
----
-
-## Notes
-
-`Destructor.Destruct` uses a **function pool map** (a dictionary of destructors indexed by type name) rather than an `if-elseif` chain. This ensures more consistent compute times across supported types.
-
-You can **schedule callbacks** to execute during destruction by calling `Destructor.Add` with a function and its arguments.
-
-**Tweens** are destructed by calling `Tween:Cancel()` before `Instance:Destroy()`.
-
-The class was **inspired by** similar alternatives like [**Maid**](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [**Janitor**](https://github.com/howmanysmall/Janitor), and [**Trove**](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau), but written around a year and a half ago as a spin-off to fit my own needs.
-
-> **Note:** This module was **never benchmarked**. Microseconds weren't a priority during writing. If you have optimizations, please submit a pull request.
-
----
-
-*Dictionaries are destructed by invoking their `Destroy` or `Destruct` key with the dictionary as the argument if it exists and is a function.
