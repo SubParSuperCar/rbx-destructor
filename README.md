@@ -20,7 +20,7 @@ IsDestructor: (value: any) -> boolean                         -- Returns a boole
 new: () -> Destructor                                         -- Returns a new Destructor object.
 Add: <Value>(self: Destructor, value: Value, ...any) -> Value -- Adds `value` to the Destructor.
 Remove: (self: Destructor, value: any) -> ()                  -- Removes `value` from the Destructor.
-Destruct: (self: Destructor) -> ()                            -- Destructs all values in the Destructor.
+Destruct: (self: Destructor) -> ()                            -- Destructs all values in the Destructor and removes them.
 ```
 
 ---
