@@ -2,7 +2,5 @@ root = true
 
 [*]
 trim_trailing_whitespace = true
-
-[*.lua]
 indent_style = tab
 indent_size = 4
