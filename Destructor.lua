@@ -10,7 +10,7 @@ type DestructorImplementation = {
 	IsDestructor: (value: any) -> boolean,
 	new: () -> Destructor,
 	Add: <Value>(self: Destructor, value: Value, ...any) -> Value,
-	Remove: (self: Destructor, value: any) -> (),
+	Remove: <Value>(self: Destructor, value: Value) -> Value,
 	Destruct: (self: Destructor) -> ()
 }
 
@@ -27,22 +27,28 @@ export type Destructor = typeof(
 
 local Destructors = {
 	["function"] = function(callback: (...any) -> (...any))
-		callback()
+		xpcall(callback, function(message: string)
+			warn(debug.traceback(message, 7))
+		end)
 	end,
 	table = function(source: {[any]: any})
-		local destruct = source.Destruct
+		xpcall(function()
+			local destruct = source.Destruct
 
-		if type(destruct) == "function" then
-			destruct(source)
+			if type(destruct) == "function" then
+				destruct(source)
 
-			return
-		end
+				return
+			end
 
-		local destroy = source.Destroy
+			local destroy = source.Destroy
 
-		if type(destroy) == "function" then
-			destroy(source)
-		end
+			if type(destroy) == "function" then
+				destroy(source)
+			end
+		end, function(message: string)
+			warn(debug.traceback(message, 7))
+		end)
 	end,
 	thread = function(thread: thread)
 		pcall(task.cancel, thread)
@@ -81,9 +87,11 @@ function Destructor:Add<Value>(value: Value, ...: any): Value
 	if type(value) == "function" then
 		local arguments = {...}
 
-		table.insert(self._Values, function()
+		local function _DestructorWrapper()
 			value(unpack(arguments))
-		end)
+		end
+
+		table.insert(self._Values, _DestructorWrapper)
 	else
 		table.insert(self._Values, value)
 	end
@@ -91,13 +99,11 @@ function Destructor:Add<Value>(value: Value, ...: any): Value
 	return value
 end
 
-function Destructor:Remove(value: any)
+function Destructor:Remove<Value>(value: Value): Value
 	local values = self._Values
 	local index = table.find(values, value)
 
-	if index then
-		table.remove(values, index)
-	end
+	return index and table.remove(values, index) :: any
 end
 
 function Destructor:Destruct()
