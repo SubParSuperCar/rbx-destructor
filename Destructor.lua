@@ -28,7 +28,7 @@ export type Destructor = typeof(
 local Destructors = {
 	["function"] = function(callback: (...any) -> (...any))
 		xpcall(callback, function(message: string)
-			warn(debug.traceback(message, 7))
+			warn(debug.traceback(message))
 		end)
 	end,
 	table = function(source: {[any]: any})
@@ -47,7 +47,7 @@ local Destructors = {
 				destroy(source)
 			end
 		end, function(message: string)
-			warn(debug.traceback(message, 7))
+			warn(debug.traceback(message))
 		end)
 	end,
 	thread = function(thread: thread)
