@@ -18,8 +18,8 @@ The API schema comprises 5 members:
 ```lua
 IsDestructor: (value: any) -> boolean                         -- Returns a boolean indicating whether `value` is a Destructor.
 new: () -> Destructor                                         -- Returns a new Destructor object.
-Add: <Value>(self: Destructor, value: Value, ...any) -> Value -- Adds `value` to the Destructor.
-Remove: (self: Destructor, value: any) -> ()                  -- Removes `value` from the Destructor.
+Add: <Value>(self: Destructor, value: Value, ...any) -> Value -- Adds `value` to the Destructor and returns it.
+Remove: <Value>(self: Destructor, value: Value) -> Value      -- Removes `value` from the Destructor and returns it if found.
 Destruct: (self: Destructor) -> ()                            -- Destructs and removes all values in the Destructor.
 ```
 
