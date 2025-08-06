@@ -84,7 +84,7 @@ function Destructor.new(): Destructor
 end
 
 function Destructor:Add<Value>(value: Value, ...: any): Value
-	if type(value) == "function" then
+	if type(value) == "function" and select("#", ...) ~= 0 then
 		local arguments = {...}
 
 		local function _DestructorWrapper()
