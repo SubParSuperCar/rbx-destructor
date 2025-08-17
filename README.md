@@ -2,7 +2,7 @@
 
 ## Overview
 
-A simple, useful, and lightweight **Lua*u* (Roblox) class** for **destructing values** of the following supported types:
+A simple, useful, and lightweight **Lua*u* (Roblox) Class** for **destructing values** of the following supported types:
 - `Function (Callback)`
 - `Dictionary (OOP)`*
 - `Thread`
