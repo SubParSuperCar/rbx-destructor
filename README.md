@@ -1,6 +1,6 @@
 # rbx-destructor (Destructor)
 
-## Description
+## Overview
 
 A simple, useful, and lightweight **Lua*u* (Roblox) class** for **destructing values** of the following supported types:
 - `Function (Callback)`
@@ -11,7 +11,7 @@ A simple, useful, and lightweight **Lua*u* (Roblox) class** for **destructing va
 
 ---
 
-## Implementation
+## API
 
 The API schema (implementation) is comprised of the following 5 members:
 
@@ -25,7 +25,7 @@ Destruct: (self: Destructor) -> ()                            -- Destructs and r
 
 ---
 
-## Details
+## Notes
 
 - `Destructor.Destruct` uses a function pool map (a dictionary of destructors indexed by their associated type names) instead of an `if-elseif` statement chain for more consistent compute times across supported types.
 
@@ -43,7 +43,7 @@ Destruct: (self: Destructor) -> ()                            -- Destructs and r
 
 ---
 
-## Excerpts
+## Example Usage
 
 Below is an excerpt from the Source of a Box Selection Tool Script in **Baja Builders — Roblox** where `Destructor` is used heavily, showcasing its utility in practice:
 
