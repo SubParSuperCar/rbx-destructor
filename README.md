@@ -25,7 +25,7 @@ Destruct: (self: Destructor) -> ()                            -- Destructs and r
 
 ---
 
-## Notes
+## Info
 
 - You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its arguments (variadic).
 
@@ -36,6 +36,8 @@ Destruct: (self: Destructor) -> ()                            -- Destructs and r
 - `Destructor.Destruct` uses a function pool map (a dictionary of destructors indexed by their associated type names) instead of an `if-elseif` statement chain for more consistent compute times across supported types.
 
 - This Class was inspired by other similar alternatives such as [Maid](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [Janitor](https://github.com/howmanysmall/Janitor), and [Trove](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau). It was written in the Spring of 2024 to satisfy my own needs, including some conservative wants.
+
+---
 
 > **Note:** I haven't benchmarked this Module. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. *Thank you.*
 
