@@ -1,8 +1,8 @@
-# rbx-destructor (Destructor)
+# rbx-destructor (I.e. Destructor)
 
 ## Overview
 
-A simple, useful, and lightweight **Lua*u* (Roblox) Class** for **destructing values** of the following supported types:
+A simple, utilitarian, and lightweight **Lua*u* (Roblox) Class** for **destructing values** of the following supported types:
 - `Function (Callback)`
 - `Dictionary (OOP)`*
 - `Thread`
@@ -13,29 +13,29 @@ A simple, useful, and lightweight **Lua*u* (Roblox) Class** for **destructing va
 
 ## API
 
-The API schema (implementation) is comprised of the following 5 members:
+The API schema (i.e., implementation) is comprised of the following 5 members:
 
 ```lua
-IsDestructor: (value: any) -> boolean                         -- Returns a boolean indicating whether `value` is a Destructor.
-new: () -> Destructor                                         -- Returns a new Destructor object.
-Add: <Value>(self: Destructor, value: Value, ...any) -> Value -- Adds `value` to the Destructor and returns it.
-Remove: <Value>(self: Destructor, value: Value) -> Value      -- Removes `value` from the Destructor and returns it if found.
-Destruct: (self: Destructor) -> ()                            -- Destructs and removes all values in the Destructor.
+IsDestructor: (value: any) -> boolean                         -- Returns a *boolean* indicating whether `value` is a *Destructor*.
+new: () -> Destructor                                         -- Returns a new *Destructor* object.
+Add: <Value>(self: Destructor, value: Value, ...any) -> Value -- Adds `value` to the *Destructor* and returns it. If `value` is a *function*, it will be thunked with varargs `...`
+Remove: <Value>(self: Destructor, value: Value) -> Value      -- Removes `value` from the *Destructor* and returns it if found.
+Destruct: (self: Destructor) -> ()                            -- Destructs and removes all values in the *Destructor*.
 ```
 
 ---
 
 ## Notes
 
-- `Destructor.Destruct` uses a function pool map (a dictionary of destructors indexed by their associated type names) instead of an `if-elseif` statement chain for more consistent compute times across supported types.
-
 - You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its arguments (variadic).
 
 - Tweens are destructed by using `Tween:Cancel()` before `Instance:Destroy()`.
 
-- This Class was inspired by other similar alternatives such as [Maid](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [Janitor](https://github.com/howmanysmall/Janitor), and [Trove](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau). It was written in Spring of 2024 to satisfy my own needs, including some conservative wants.
+- `Destructor.Destruct` uses a function pool map (a dictionary of destructors indexed by their associated type names) instead of an `if-elseif` statement chain for more consistent compute times across supported types.
 
-> **Note:** I haven't benchmarked this Module. Identifying and implementing micro-optimizations to potentially shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. *Thank you.*
+- This Class was inspired by other similar alternatives such as [Maid](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [Janitor](https://github.com/howmanysmall/Janitor), and [Trove](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau). It was written in the Spring of 2024 to satisfy my own needs, including some conservative wants.
+
+> **Note:** I haven't benchmarked this Module. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. *Thank you.*
 
 ---
 
