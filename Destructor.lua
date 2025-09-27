@@ -86,17 +86,23 @@ function Destructor.new(): Destructor
 end
 
 function Destructor:Add<Value>(value: Value, ...: any): Value
-	if type(value) == "function" and select("#", ...) ~= 0 then
-		local arguments = {...}
+	local entry: any = value
 
-		local function _DestructorThunk()
-			value(unpack(arguments))
+	if type(value) == "function" then
+		assert(not self._Destructing, `Called {self.Add} on {self} with argument 'Value' as {value} and not function or while property '_Destructing' is {self._Destructing} and not falsy.`)
+
+		if select("#", ...) ~= 0 then
+			local arguments = {...}
+
+			local function _DestructorThunk()
+				value(unpack(arguments))
+			end
+
+			entry = _DestructorThunk
 		end
-
-		table.insert(self._Values, _DestructorThunk)
-	else
-		table.insert(self._Values, value)
 	end
+
+	table.insert(self._Values, entry)
 
 	return value
 end
