@@ -15,7 +15,8 @@ type DestructorImplementation = {
 }
 
 type DestructorProperties = {
-	_Values: {any}
+	_Values: {any},
+	_Destructing: boolean
 }
 
 export type Destructor = typeof(
@@ -79,7 +80,8 @@ end
 
 function Destructor.new(): Destructor
 	return setmetatable({
-		_Values = {}
+		_Values = {},
+		_Destructing = false
 	}, Destructor)
 end
 
@@ -87,11 +89,11 @@ function Destructor:Add<Value>(value: Value, ...: any): Value
 	if type(value) == "function" and select("#", ...) ~= 0 then
 		local arguments = {...}
 
-		local function _DestructorWrapper()
+		local function _DestructorThunk()
 			value(unpack(arguments))
 		end
 
-		table.insert(self._Values, _DestructorWrapper)
+		table.insert(self._Values, _DestructorThunk)
 	else
 		table.insert(self._Values, value)
 	end
@@ -107,6 +109,10 @@ function Destructor:Remove<Value>(value: Value): Value
 end
 
 function Destructor:Destruct()
+	assert(not self._Destructing, `Called {self.Destruct} on {self} while property '_Destructing' is {self._Destructing} and not falsy.`)
+
+	self._Destructing = true
+
 	local values = self._Values
 	local index, value = next(values)
 
@@ -121,6 +127,8 @@ function Destructor:Destruct()
 
 		index, value = next(values)
 	end
+
+	self._Destructing = false
 end
 
 return Destructor
