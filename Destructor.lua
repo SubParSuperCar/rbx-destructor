@@ -25,7 +25,7 @@ type Implementation = {
 }
 
 type Properties = {
-	_Values: {any}
+	_Values: Values
 }
 
 export type Destructor = typeof(
