@@ -41,7 +41,7 @@ Destroy: Destruct                                              -- Alias for the 
 
 ---
 
-> **Note:** I haven't benchmarked this module's performance. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. *Thank you.*
+> **Note:** I haven't benchmarked this module's performance. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. ***Thank you.***
 
 ---
 
@@ -125,4 +125,4 @@ local enabledChangedDestructor = Destructor.new();
 end)
 ```
 
-> **Note:** The above Source excerpt is outdated and does not properly utilize the `Extend` method. A new Source will be put up as soon as one is available.
+> **Note:** The above Source excerpt is outdated and does not properly utilize the `Extend` method. An updated Source will be put up as soon as one is available.
