@@ -58,7 +58,6 @@ end
 
 function Destructor:Extend(): Destructor
 	local destructor = Destructor.new({self})
-
 	local persister: Persister
 
 	-- Define on separate line from assignment to preserve function name for traceback. (*4)
@@ -83,10 +82,9 @@ function Destructor:Extend(): Destructor
 	end
 
 	persister = _DestructorEntryPersister
+	destructor:Add(persister)
 
 	type Persister = typeof(persister)
-
-	destructor:Add(persister)
 
 	return destructor
 end
