@@ -92,10 +92,10 @@ function Destructor:Add<Value>(value: Value, ...: any): Value
 		assert(not self._Destructing, `Called {self.Add} on {self} with argument 'Value' as {value} and not function or while property '_Destructing' is {self._Destructing} and not falsy.`)
 
 		if select("#", ...) ~= 0 then
-			local arguments = {...}
+			local varargs = {...}
 
 			local function _DestructorThunk()
-				value(unpack(arguments))
+				value(unpack(varargs))
 			end
 
 			entry = _DestructorThunk
