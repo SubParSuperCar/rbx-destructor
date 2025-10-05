@@ -26,7 +26,7 @@ Destroy: <*Destruct>                                          -- Alias for Destr
 
 ---
 
-## Info
+## Details
 
 - You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its arguments (variadic).
 
