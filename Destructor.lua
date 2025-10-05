@@ -71,7 +71,7 @@ function Destructor:Add<Value>(value: Value, ...: VarArgs<any>): Value
 
 		-- Only wrap if varargs are provided to minimize compute time & memory pressure.
 		if varargs.n ~= 0 then
-			-- Define on a separate line from the entry assignment to preserve the function name for traceback.
+			-- Define on separate line from entry assignment to preserve function name for traceback.
 			local function _DestructorThunkWrapper()
 				value(unpack(varargs))
 			end
@@ -99,6 +99,8 @@ local function OnError(message: string)
 	warn(debug.traceback(message))
 end
 
+local Iterator = ipairs({})
+
 -- Function pool map of destructors indexed by type name for compute time consistency.
 local Destructors = {
 	Instance = function(instance: Instance)
@@ -116,18 +118,21 @@ local Destructors = {
 		xpcall(callback, OnError)
 	end,
 	table = function(source: Dictionary)
-		xpcall(function()
-			-- Call the first found destructor.
-			for _, key in DICTIONARY_DESTRUCTOR_KEYS do
-				local value = source[key]
+		-- Ignore if array or mixed table; only index dictionaries.
+		if Iterator(source, 0) then
+			return
+		end
 
-				if type(value) == "function" then
-					value(source)
+		-- Call first found destructor.
+		for _, key in DICTIONARY_DESTRUCTOR_KEYS do
+			local value = source[key]
 
-					return
-				end
+			if value and type(value) == "function" then
+				xpcall(value, OnError, source)
+
+				return
 			end
-		end, OnError)
+		end
 	end,
 	thread = function(thread: thread)
 		-- Call in protected mode; throws error if thread is running [[nested] coroutine(s)].
