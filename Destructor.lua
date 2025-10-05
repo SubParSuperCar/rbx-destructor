@@ -6,7 +6,7 @@ type Integer = number
 type VarArgs<Type> = Type -- Sugar for variable arguments.
 
 type Iterator = (Destructor, Integer?) -> (Integer?, any)
-
+type Values = {any}
 type Destruct = (self: Destructor) -> ()
 
 type Implementation = {
@@ -14,7 +14,8 @@ type Implementation = {
 	__len: (self: Destructor) -> Integer,
 	__iter: (self: Destructor) -> Iterator,
 	IsDestructor: (value: any) -> boolean,
-	new: () -> Destructor,
+	new: (_values: Values?) -> Destructor,
+	Extend: (self: Destructor) -> Destructor,
 	Add: <Value>(self: Destructor, value: Value, ...VarArgs<any>) -> Value,
 	Remove: <Value>(self: Destructor, value: Value) -> Value,
 	Destruct: Destruct,
@@ -48,11 +49,15 @@ function Destructor.IsDestructor(value: any): boolean
 	return type(value) == "table" and getmetatable(value) == Destructor
 end
 
-function Destructor.new(): Destructor
+function Destructor.new(_values: Values?): Destructor
 	return setmetatable({
-		_Values = {},
+		_Values = _values or {},
 		_Destructing = false
 	}, Destructor)
+end
+
+function Destructor:Extend(): Destructor
+	return Destructor.new({self})
 end
 
 function Destructor:Add<Value>(value: Value, ...: VarArgs<any>): Value
