@@ -3,9 +3,6 @@
 local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for callable destructor.
 
 type Integer = number
-type Callback = (...any) -> ...any
-type Dictionary = {[any]: any}
-
 type VarArgs<Type> = Type -- Sugar for variable arguments.
 
 type Iterator = (Destructor, Integer?) -> (Integer?, any)
@@ -43,7 +40,6 @@ function Destructor:__len(): Integer
 	return #self._Values
 end
 
--- Called for generalized iteration.
 function Destructor:__iter(): Iterator
 	return next, self._Values
 end
@@ -94,51 +90,80 @@ function Destructor:Remove<Value>(value: Value): Value
 	return index and table.remove(values, index) :: any
 end
 
--- Error handler for destructors calling provided callbacks.
-local function OnError(message: string)
-	warn(debug.traceback(message))
-end
-
-local Iterator = ipairs({})
+type TypeNames = string
+type Destructors = (any) -> ()
 
 -- Function pool map of destructors indexed by type name for compute time consistency.
-local Destructors = {
-	Instance = function(instance: Instance)
+local Destructors: {[TypeNames]: Destructors}
+
+do
+	local function _InstanceDestructor(instance: Instance)
 		-- Pause if Tween; Destroy does not halt playback.
 		if instance:IsA("Tween") then
 			instance:Pause()
 		end
 
 		instance:Destroy()
-	end,
-	RBXScriptConnection = function(connection: RBXScriptConnection)
+	end
+
+	local function _ConnectionDestructor(connection: RBXScriptConnection)
 		connection:Disconnect()
-	end,
-	["function"] = function(callback: Callback)
-		xpcall(callback, OnError)
-	end,
-	table = function(source: Dictionary)
+	end
+
+	-- Error handler for destructors calling provided callbacks.
+	local function _DestructorErrorHandler(message: string)
+		warn(debug.traceback(message))
+	end
+
+	type Callback = (...any) -> ...any
+
+	local function _CallbackDestructor(callback: Callback)
+		xpcall(callback, _DestructorErrorHandler)
+	end
+
+	type Dictionary = {[any]: any}
+
+	local Iterator = ipairs({})
+
+	local function _DictionaryDestructor(dictionary: Dictionary)
 		-- Ignore if array or mixed table; only index dictionaries.
-		if Iterator(source, 0) then
+		if Iterator(dictionary, 0) then
 			return
 		end
 
 		-- Call first found destructor.
 		for _, key in DICTIONARY_DESTRUCTOR_KEYS do
-			local value = source[key]
+			if
+				select(2, xpcall(function()
+					local value = dictionary[key]
 
-			if value and type(value) == "function" then
-				xpcall(value, OnError, source)
+					if value and type(value) == "function" then
+						value(dictionary)
 
+						return true
+					end
+
+					return false
+				end, _DestructorErrorHandler))
+			then
 				return
 			end
 		end
-	end,
-	thread = function(thread: thread)
+	end
+
+	local function _ThreadDestructor(thread: thread)
 		-- Call in protected mode; throws error if thread is running [[nested] coroutine(s)].
 		pcall(task.cancel, thread)
 	end
-}
+
+	Destructors = {
+		Instance = _InstanceDestructor,
+		RBXScriptConnection = _ConnectionDestructor,
+		["function"] = _CallbackDestructor,
+		table = _DictionaryDestructor,
+		thread = _ThreadDestructor
+	}
+end
 
 function Destructor:Destruct()
 	-- *2
