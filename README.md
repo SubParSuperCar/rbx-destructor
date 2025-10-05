@@ -124,3 +124,5 @@ local enabledChangedDestructor = Destructor.new();
 	end))
 end)
 ```
+
+> **Note:** The above Source excerpt is outdated and does not properly utilize the `Extend` method. A new Source will be put up as soon as one is available.
