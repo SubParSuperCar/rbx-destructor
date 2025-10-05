@@ -1,30 +1,31 @@
 --!strict
 --!native
-local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for callable destructor.
+local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for successful destructor.
+local PERSISTER_MAX_DEPTH = 3 -- Persister call limit to prevent cyclic re-entry hangs. (*1)
 
 type Integer = number
 type VarArgs<Type> = Type -- Sugar for variable arguments.
 
-type Iterator = (Destructor, Integer?) -> (Integer?, any)
 type Values = {any}
+
+type Iterator = (Destructor, Integer?) -> (Integer?, any)
 type Destruct = (self: Destructor) -> ()
 
 type Implementation = {
 	__index: Implementation,
 	__len: (self: Destructor) -> Integer,
 	__iter: (self: Destructor) -> Iterator,
-	IsDestructor: (value: any) -> boolean,
-	new: (_values: Values?) -> Destructor,
-	Extend: (self: Destructor) -> Destructor,
-	Add: <Value>(self: Destructor, value: Value, ...VarArgs<any>) -> Value,
-	Remove: <Value>(self: Destructor, value: Value) -> Value,
-	Destruct: Destruct,
-	Destroy: Destruct -- Alias for Destruct method. (*1)
+	IsDestructor: (value: any) -> boolean, -- Returns a *boolean* indicating whether `value` is a *Destructor*.
+	new: (_values: Values?) -> Destructor, -- Returns a new *Destructor* object.
+	Extend: (self: Destructor) -> Destructor, -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`.
+	Add: <Value>(self: Destructor, value: Value, ...VarArgs<any>) -> Value, -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
+	Remove: <Value>(self: Destructor, value: Value) -> Value, -- Removes `value` from the *Destructor* and returns it if found.
+	Destruct: Destruct, -- Destructs and removes all values from the *Destructor*. Throws an error if called while executing.
+	Destroy: Destruct -- Alias for the `Destruct` method. (*2)
 }
 
 type Properties = {
-	_Values: {any},
-	_Destructing: boolean -- Mutex-like behavior to prevent infinite cyclic re-entry hangs. (*2)
+	_Values: {any}
 }
 
 export type Destructor = typeof(
@@ -51,28 +52,61 @@ end
 
 function Destructor.new(_values: Values?): Destructor
 	return setmetatable({
-		_Values = _values or {},
-		_Destructing = false
+		_Values = _values or {}
 	}, Destructor)
 end
 
 function Destructor:Extend(): Destructor
-	return Destructor.new({self})
+	local destructor = Destructor.new({self})
+
+	local persister: Persister
+
+	-- Define on separate line from assignment to preserve function name for traceback. (*4)
+	local function _DestructorEntryPersister(depth: Integer?)
+		local depth = depth or 1
+
+		task.defer(xpcall, function()
+			self:Add(destructor)
+			self:Add(persister)
+		end, function(message: string)
+			warn(debug.traceback(message))
+
+			-- *1
+			if depth ~= PERSISTER_MAX_DEPTH then
+				persister(depth + 1)
+
+				return
+			end
+
+			warn(`Variable 'Depth' is {depth} and equal to constant 'PERSISTER_MAX_DEPTH' as {PERSISTER_MAX_DEPTH}.`)
+		end)
+	end
+
+	persister = _DestructorEntryPersister
+
+	type Persister = typeof(persister)
+
+	destructor:Add(persister)
+
+	return destructor
 end
+
+-- Mutex-like behavior to prevent cyclic re-entry hangs. *1 -> (*3)
+local IsDestructing = false
 
 function Destructor:Add<Value>(value: Value, ...: VarArgs<any>): Value
 	local entry: any = value
 
 	if type(value) == "function" then
-		-- *2
-		assert(not self._Destructing, `Called method 'Add' on {self} with argument 'Value' as {value} and not a function or while property '_Destructing' is {self._Destructing} and not falsy.`)
+		-- *3
+		assert(not IsDestructing, `Called method 'Add' on {self} with argument 'Value' as {value} and not a function or while variable 'IsDestructing' is {IsDestructing} and not falsy.`)
 
 		-- table.pack return comprises key 'n' indicating arity; ignored by unpack.
 		local varargs = table.pack(...)
 
 		-- Only wrap if varargs are provided to minimize compute time & memory pressure.
 		if varargs.n ~= 0 then
-			-- Define on separate line from entry assignment to preserve function name for traceback.
+			-- *4
 			local function _DestructorThunkWrapper()
 				value(unpack(varargs))
 			end
@@ -134,7 +168,7 @@ do
 			return
 		end
 
-		-- Call first found destructor.
+		-- Call first found successful destructor.
 		for _, key in DICTIONARY_DESTRUCTOR_KEYS do
 			if
 				select(2, xpcall(function()
@@ -169,10 +203,10 @@ do
 end
 
 function Destructor:Destruct()
-	-- *2
-	assert(not self._Destructing, `Called method 'Destruct' on {self} while property '_Destructing' is {self._Destructing} and not falsy.`)
+	-- *3
+	assert(not IsDestructing, `Called method 'Destruct' on {self} while variable 'IsDestructing' is {IsDestructing} and not falsy.`)
 
-	self._Destructing = true
+	IsDestructing = true
 
 	local values = self._Values
 	local index, value = next(values)
@@ -189,10 +223,10 @@ function Destructor:Destruct()
 		index, value = next(values)
 	end
 
-	self._Destructing = false
+	IsDestructing = false
 end
 
--- *1
+-- *2
 Destructor.Destroy = Destructor.Destruct
 
 return Destructor
