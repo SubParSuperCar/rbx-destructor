@@ -123,11 +123,9 @@ do
 
 	type Dictionary = {[any]: any}
 
-	local Iterator = ipairs({})
-
 	local function _DictionaryDestructor(dictionary: Dictionary)
 		-- Ignore if array or mixed table; only index dictionaries.
-		if Iterator(dictionary, 0) then
+		if ipairs(dictionary)(dictionary, 0) then
 			return
 		end
 
