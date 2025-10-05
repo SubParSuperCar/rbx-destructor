@@ -22,7 +22,7 @@ Extend: (self: Destructor) -> Destructor                      -- Returns a new *
 Add: <Value>(self: Destructor, value: Value, ...any) -> Value -- Adds `value` to the *Destructor* and returns it. If `value` is a *function*, it will be thunked with varargs `...`, and it will error if `Destruct` is executing.
 Remove: <Value>(self: Destructor, value: Value) -> Value      -- Removes `value` from the *Destructor* and returns it if found.
 Destruct: (self: Destructor) -> ()                            -- Destructs and removes all values in the *Destructor*. It cannot be called while it is executing.
-Destroy: <*Destruct>                                          -- Alias for `Destruct`.
+Destroy: *Destruct                                            -- Alias for `Destruct`.
 ```
 
 ---
