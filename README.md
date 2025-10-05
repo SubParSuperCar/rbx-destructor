@@ -21,6 +21,7 @@ new: () -> Destructor                                         -- Returns a new *
 Add: <Value>(self: Destructor, value: Value, ...any) -> Value -- Adds `value` to the *Destructor* and returns it. If `value` is a *function*, it will be thunked with varargs `...`, and it will error if `Destruct` is executing.
 Remove: <Value>(self: Destructor, value: Value) -> Value      -- Removes `value` from the *Destructor* and returns it if found.
 Destruct: (self: Destructor) -> ()                            -- Destructs and removes all values in the *Destructor*. It cannot be called while it is executing.
+Destroy: <*Destruct>                                          -- Alias for Destruct.
 ```
 
 ---
@@ -29,17 +30,17 @@ Destruct: (self: Destructor) -> ()                            -- Destructs and r
 
 - You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its arguments (variadic).
 
-- Tweens are destructed by using `Tween:Cancel()` before `Instance:Destroy()`.
+- Tweens are destructed by using `Tween:Pause()` before `Instance:Destroy()`.
 
-- While destruction is in progress, `Destructor.Add` (with callbacks) and `Destructor.Destruct` cannot be called. This prevents cyclic loops caused by callbacks re-adding themselves.
+- While destruction is in progress, `Destructor.Add` (with callbacks) and `Destructor.Destruct` cannot be called. This prevents infinite cyclic loops caused by callbacks re-adding themselves.
 
 - `Destructor.Destruct` uses a function pool map (a dictionary of destructors indexed by their associated type names) instead of an `if-elseif` statement chain for more consistent compute times across supported types.
 
-- This Class was inspired by other similar alternatives such as [Maid](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [Janitor](https://github.com/howmanysmall/Janitor), and [Trove](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau). It was written in the Spring of 2024 to satisfy my own needs, including some conservative wants.
+- This class was inspired by other similar alternatives such as [Maid](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [Janitor](https://github.com/howmanysmall/Janitor), and [Trove](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau). It was written in the Spring of 2024 to satisfy my own needs, including some conservative wants.
 
 ---
 
-> **Note:** I haven't benchmarked this Module. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. *Thank you.*
+> **Note:** I haven't benchmarked this module's performance. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. *Thank you.*
 
 ---
 
