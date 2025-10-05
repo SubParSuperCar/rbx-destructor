@@ -6,7 +6,7 @@ type Integer = number
 type Callback = (...any) -> ...any
 type Dictionary = {[any]: any}
 
-type Varargs<Type> = Type -- Sugar for variable arguments.
+type VarArgs<Type> = Type -- Sugar for variable arguments.
 
 type Iterator = (Destructor, Integer?) -> (Integer?, any)
 
@@ -18,7 +18,7 @@ type Implementation = {
 	__iter: (self: Destructor) -> Iterator,
 	IsDestructor: (value: any) -> boolean,
 	new: () -> Destructor,
-	Add: <Value, Arguments...>(self: Destructor, value: Value, Arguments...) -> Value,
+	Add: <Value>(self: Destructor, value: Value, ...VarArgs<any>) -> Value,
 	Remove: <Value>(self: Destructor, value: Value) -> Value,
 	Destruct: Destruct,
 	Destroy: Destruct -- Alias for Destruct method. (*1)
@@ -59,7 +59,7 @@ function Destructor.new(): Destructor
 	}, Destructor)
 end
 
-function Destructor:Add<Value, Arguments...>(value: Value, ...: Arguments...): Value
+function Destructor:Add<Value>(value: Value, ...: VarArgs<any>): Value
 	local entry: any = value
 
 	if type(value) == "function" then
