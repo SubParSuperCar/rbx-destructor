@@ -57,7 +57,7 @@ function Destructor.new(_values: Values?): Destructor
 end
 
 function Destructor:Extend(): Destructor
-	local destructor = Destructor.new({self})
+	local destructor = Destructor.new({self :: any, nil})
 	local persister: Persister
 
 	-- Define on separate line from assignment to preserve function name for traceback. (*4)
