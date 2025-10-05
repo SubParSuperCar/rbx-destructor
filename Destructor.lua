@@ -26,7 +26,7 @@ type Implementation = {
 
 type Properties = {
 	_Values: {any},
-	_Destructing: boolean -- Mutex-like behavior to prevent cyclic hangs. (*2)
+	_Destructing: boolean -- Mutex-like behavior to prevent infinite cyclic re-entry hangs. (*2)
 }
 
 export type Destructor = typeof(
@@ -71,7 +71,7 @@ function Destructor:Add<Value>(value: Value, ...: VarArgs<any>): Value
 
 		-- Only wrap if varargs are provided to minimize compute time & memory pressure.
 		if varargs.n ~= 0 then
-			-- Define on separate line than entry assignment to preserve function name for traceback.
+			-- Define on a separate line from the entry assignment to preserve the function name for traceback.
 			local function _DestructorThunkWrapper()
 				value(unpack(varargs))
 			end
@@ -99,6 +99,7 @@ local function OnError(message: string)
 	warn(debug.traceback(message))
 end
 
+-- Function pool map of destructors indexed by type name for compute time consistency.
 local Destructors = {
 	Instance = function(instance: Instance)
 		-- Pause if Tween; Destroy does not halt playback.
@@ -116,7 +117,7 @@ local Destructors = {
 	end,
 	table = function(source: Dictionary)
 		xpcall(function()
-			-- Call first found destructor.
+			-- Call the first found destructor.
 			for _, key in DICTIONARY_DESTRUCTOR_KEYS do
 				local value = source[key]
 
