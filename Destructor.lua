@@ -17,7 +17,7 @@ type Implementation = {
 	__iter: (self: Destructor) -> Iterator,
 	IsDestructor: (value: any) -> boolean, -- Returns a *boolean* indicating whether `value` is a *Destructor*.
 	new: (_values: Values?) -> Destructor, -- Returns a new *Destructor* object.
-	Extend: (self: Destructor) -> Destructor, -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`.
+	Extend: (self: Destructor, once: boolean?) -> Destructor, -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, it will only call `Destruct` once.
 	Add: <Value>(self: Destructor, value: Value, ...VarArgs<any>) -> Value, -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
 	Remove: <Value>(self: Destructor, value: Value) -> Value, -- Removes `value` from the *Destructor* and returns it if found.
 	Destruct: Destruct, -- Destructs and removes all values from the *Destructor*. Throws an error if called while executing.
@@ -56,9 +56,18 @@ function Destructor.new(_values: Values?): Destructor
 	}, Destructor)
 end
 
-function Destructor:Extend(): Destructor
+function Destructor:Extend(once: boolean?): Destructor
+	assert(not once or once == true, `Argument 'Once' to method 'Extend' on {self} is {once} and not a boolean or nil.`)
+
 	local destructor = Destructor.new({self :: any, nil})
-	local persister: Persister
+
+	if once then
+		self:Add(destructor)
+
+		return destructor
+	end
+
+	local Persister: Persister
 
 	-- Define on separate line from assignment to preserve function name for traceback. (*4)
 	local function _DestructorEntryPersister(depth: Integer?)
@@ -66,13 +75,13 @@ function Destructor:Extend(): Destructor
 
 		task.defer(xpcall, function()
 			self:Add(destructor)
-			self:Add(persister)
+			self:Add(Persister)
 		end, function(message: string)
 			warn(debug.traceback(message))
 
 			-- *1
 			if depth ~= PERSISTER_MAX_DEPTH then
-				persister(depth + 1)
+				Persister(depth + 1)
 
 				return
 			end
@@ -81,10 +90,10 @@ function Destructor:Extend(): Destructor
 		end)
 	end
 
-	persister = _DestructorEntryPersister
-	destructor:Add(persister)
+	Persister = _DestructorEntryPersister
+	Persister()
 
-	type Persister = typeof(persister)
+	type Persister = typeof(Persister)
 
 	return destructor
 end
