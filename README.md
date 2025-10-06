@@ -18,7 +18,7 @@ The API schema (i.e., implementation) is comprised of the following 5 members:
 ```lua
 IsDestructor: (value: any) -> boolean,                         -- Returns a *boolean* indicating whether `value` is a *Destructor*.
 new: () -> Destructor,                                         -- Returns a new *Destructor* object.
-Extend: (self: Destructor) -> Destructor,                      -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`.
+Extend: (self: Destructor) -> Destructor,                      -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, it will only call `Destruct` once.
 Add: <Value>(self: Destructor, value: Value, ...any) -> Value, -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
 Remove: <Value>(self: Destructor, value: Value) -> Value,      -- Removes `value` from the *Destructor* and returns it if found.
 Destruct: Destruct,                                            -- Destructs and removes all values from the *Destructor*. Throws an error if called while executing.
