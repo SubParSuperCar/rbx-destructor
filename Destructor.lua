@@ -25,7 +25,8 @@ type Implementation = {
 }
 
 type Properties = {
-	_Values: Values
+	_Values: Values,
+	_IsDestructing: boolean -- Mutex-like behavior to prevent cyclic re-entry hangs. *1 -> (*3)
 }
 
 export type Destructor = typeof(
@@ -52,7 +53,8 @@ end
 
 function Destructor.new(_values: Values?): Destructor
 	return setmetatable({
-		_Values = _values or {}
+		_Values = _values or {},
+		_IsDestructing = false
 	}, Destructor)
 end
 
@@ -98,15 +100,12 @@ function Destructor:Extend(once: boolean?): Destructor
 	return destructor
 end
 
--- Mutex-like behavior to prevent cyclic re-entry hangs. *1 -> (*3)
-local IsDestructing = false
-
 function Destructor:Add<Value>(value: Value, ...: VarArgs<any>): Value
 	local entry: any = value
 
 	if type(value) == "function" then
 		-- *3
-		assert(not IsDestructing, `Called method 'Add' on {self} with argument 'Value' as {value} and not a function or while variable 'IsDestructing' is {IsDestructing} and not falsy.`)
+		assert(not self._IsDestructing, `Called method 'Add' on {self} with argument 'Value' as {value} and not a function or while variable 'IsDestructing' is {self._IsDestructing} and not falsy.`)
 
 		-- table.pack return comprises key 'n' indicating arity; ignored by unpack.
 		local varargs = table.pack(...)
@@ -211,9 +210,9 @@ end
 
 function Destructor:Destruct()
 	-- *3
-	assert(not IsDestructing, `Called method 'Destruct' on {self} while variable 'IsDestructing' is {IsDestructing} and not falsy.`)
+	assert(not self._IsDestructing, `Called method 'Destruct' on {self} while variable 'IsDestructing' is {self._IsDestructing} and not falsy.`)
 
-	IsDestructing = true
+	self._IsDestructing = true
 
 	local values = self._Values
 	local index, value = next(values)
@@ -230,7 +229,7 @@ function Destructor:Destruct()
 		index, value = next(values)
 	end
 
-	IsDestructing = false
+	self._IsDestructing = false
 end
 
 -- *2
