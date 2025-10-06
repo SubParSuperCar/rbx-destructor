@@ -21,8 +21,8 @@ new: () -> Destructor,                                         -- Returns a new 
 Extend: (self: Destructor) -> Destructor,                      -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, it will only call `Destruct` once.
 Add: <Value>(self: Destructor, value: Value, ...any) -> Value, -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
 Remove: <Value>(self: Destructor, value: Value) -> Value,      -- Removes `value` from the *Destructor* and returns it if found.
-Destruct: Destruct,                                            -- Destructs and removes all values from the *Destructor*. Throws an error if called while executing.
-Destroy: Destruct                                              -- Alias for the `Destruct` method.
+Destruct: (self: Destructor) -> ()                             -- Destructs and removes all values from the *Destructor*. Throws an error if called while executing.
+Destroy: *Destruct                                             -- Alias for the `Destruct` method.
 ```
 
 ---
