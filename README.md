@@ -16,13 +16,14 @@ A simple, utilitarian, and lightweight **Lua*u* (Roblox) Class** for **destructi
 The API schema (i.e., implementation) is comprised of the following 5 members:
 
 ```lua
-IsDestructor: (value: any) -> boolean,                         -- Returns a *boolean* indicating whether `value` is a *Destructor*.
-new: () -> Destructor,                                         -- Returns a new *Destructor* object.
-Extend: (self: Destructor) -> Destructor,                      -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, it will only call `Destruct` once.
-Add: <Value>(self: Destructor, value: Value, ...any) -> Value, -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
-Remove: <Value>(self: Destructor, value: Value) -> Value,      -- Removes `value` from the *Destructor* and returns it if found.
-Destruct: (self: Destructor) -> ()                             -- Destructs and removes all values from the *Destructor*. Throws an error if called while executing.
-Destroy: *Destruct                                             -- Alias for the `Destruct` method.
+IsDestructor: (value: any) -> boolean,                                    -- Returns a *boolean* indicating whether `value` is a *Destructor*.
+new: () -> Destructor,                                                    -- Returns a new *Destructor* object.
+Extend: (self: Destructor, once: boolean?) -> Destructor,                 -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, `Destruct` will only be called once.
+Add: <Value>(self: Destructor, value: Value, ...any) -> Value,            -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
+Remove: <Value>(self: Destructor, value: Value, all: boolean?) -> ...any, -- Removes the first value matching `value` from the *Destructor* and returns it if found. If `all` is *true*, all values matching `value` will be removed and returned, not just the first.
+Clear: (self: Destructor) -> (),                                          -- Removes all values from the *Destructor* without destructing them.
+Destruct: Destruct,                                                       -- Destructs and removes all values from the *Destructor*. Throws an error if called during execution.
+Destroy: Destruct                                                         -- Alias for the `Destruct` method.
 ```
 
 ---
@@ -125,4 +126,4 @@ local enabledChangedDestructor = Destructor.new();
 end)
 ```
 
-> **Note:** The above Source excerpt is outdated and does not properly utilize the `Extend` method. An updated Source will be put up as soon as one is available.
+> **Note:** The above Source excerpt is outdated and does not properly utilize the new `Extend` and `Clear` methods. An updated Source will be put up as soon as one is available.
