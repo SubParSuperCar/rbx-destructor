@@ -13,7 +13,7 @@ A simple, utilitarian, and lightweight **Lua*u* (Roblox) Class** for **destructi
 
 ## API
 
-The API schema (i.e., implementation) is comprised of the following 5 members:
+The API schema (i.e., implementation) is comprised of the following 8 members:
 
 ```lua
 IsDestructor: (value: any) -> boolean,                                    -- Returns a *boolean* indicating whether `value` is a *Destructor*.
