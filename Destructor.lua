@@ -1,31 +1,32 @@
 --!strict
 --!native
 local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for successful destructor.
-local PERSISTER_MAX_DEPTH = 3 -- Persister call limit to prevent cyclic re-entry hangs. (*1)
+local PERSISTER_MAX_DEPTH = 3 -- Consecutive Persister call limit to prevent cyclic re-entry hangs. (*1)
 
-type Integer = number
+type UnsignedInteger = number -- [0 .. ∞)
+type Array = {any}
+
 type VarArgs<Type> = Type -- Sugar for variable arguments.
 
-type Values = {any}
-
-type Iterator = (Destructor, Integer?) -> (Integer?, any)
+type Iterator = (Destructor, UnsignedInteger?) -> (UnsignedInteger?, any)
 type Destruct = (self: Destructor) -> ()
 
 type Implementation = {
 	__index: Implementation,
-	__len: (self: Destructor) -> Integer,
+	__len: (self: Destructor) -> UnsignedInteger,
 	__iter: (self: Destructor) -> Iterator,
 	IsDestructor: (value: any) -> boolean, -- Returns a *boolean* indicating whether `value` is a *Destructor*.
-	new: (_values: Values?) -> Destructor, -- Returns a new *Destructor* object.
-	Extend: (self: Destructor, once: boolean?) -> Destructor, -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, it will only call `Destruct` once.
+	new: (_values: Array?) -> Destructor, -- Returns a new *Destructor* object.
+	Extend: (self: Destructor, once: boolean?) -> Destructor, -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, `Destruct` will only be called once.
 	Add: <Value>(self: Destructor, value: Value, ...VarArgs<any>) -> Value, -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
-	Remove: <Value>(self: Destructor, value: Value) -> Value, -- Removes `value` from the *Destructor* and returns it if found.
-	Destruct: Destruct, -- Destructs and removes all values from the *Destructor*. Throws an error if called while executing.
+	Remove: <Value>(self: Destructor, value: Value, all: boolean?) -> VarArgs<Value>, -- Removes the first value matching `value` from the *Destructor* and returns it if found. If `all` is *true*, all values matching `value` will be removed and returned, not just the first.
+	Clear: (self: Destructor) -> (), -- Removes all values from the *Destructor* without destructing them.
+	Destruct: Destruct, -- Destructs and removes all values from the *Destructor*. Throws an error if called during execution. *3
 	Destroy: Destruct -- Alias for the `Destruct` method. (*2)
 }
 
 type Properties = {
-	_Values: Values,
+	_Values: Array,
 	_IsDestructing: boolean -- Mutex-like behavior to prevent cyclic re-entry hangs. *1 -> (*3)
 }
 
@@ -39,7 +40,7 @@ export type Destructor = typeof(
 local Destructor = {} :: Implementation
 Destructor.__index = Destructor
 
-function Destructor:__len(): Integer
+function Destructor:__len(): UnsignedInteger
 	return #self._Values
 end
 
@@ -51,7 +52,7 @@ function Destructor.IsDestructor(value: any): boolean
 	return type(value) == "table" and getmetatable(value) == Destructor
 end
 
-function Destructor.new(_values: Values?): Destructor
+function Destructor.new(_values: Array?): Destructor
 	return setmetatable({
 		_Values = _values or {},
 		_IsDestructing = false
@@ -72,7 +73,7 @@ function Destructor:Extend(once: boolean?): Destructor
 	local Persister: Persister
 
 	-- Define on separate line from assignment to preserve function name for traceback. (*4)
-	local function _DestructorEntryPersister(depth: Integer?)
+	local function _DestructorEntryPersister(depth: UnsignedInteger?)
 		local depth = depth or 1
 
 		task.defer(xpcall, function()
@@ -127,12 +128,40 @@ function Destructor:Add<Value>(value: Value, ...: VarArgs<any>): Value
 	return value
 end
 
-function Destructor:Remove<Value>(value: Value): Value
-	local values = self._Values
-	local index = table.find(values, value)
+function Destructor:Remove<Value>(value: Value, all: boolean?): ...VarArgs<Value>
+	assert(not all or all == true, `Argument 'All' to method 'Remove' on {self} is {all} and not a boolean or nil.`)
 
-	-- Return entry if found.
-	return index and table.remove(values, index) :: any
+	local values = self._Values
+
+	-- Remove and return value if found.
+	if not all then
+		local index = table.find(values, value)
+
+		return index and table.remove(values, index)
+	end
+
+	-- Remove and return all found values.
+	local removed, lastIndex = {}, 1
+
+	while true do
+		-- Continue from last found index to minimize compute time.
+		local index = table.find(values, value, lastIndex)
+
+		if not index then
+			break
+		end
+
+		table.remove(values, index)
+		table.insert(removed, value)
+
+		lastIndex = index :: any
+	end
+
+	return unpack(removed)
+end
+
+function Destructor:Clear()
+	table.clear(self._Values)
 end
 
 type TypeNames = string
@@ -142,6 +171,7 @@ type Destructors = (any) -> ()
 local Destructors: {[TypeNames]: Destructors}
 
 do
+	-- *4
 	local function _InstanceDestructor(instance: Instance)
 		-- Pause if Tween; Destroy does not halt playback.
 		if instance:IsA("Tween") then
@@ -174,7 +204,7 @@ do
 			return
 		end
 
-		-- Call first found successful destructor.
+		-- Call first successful destructor found.
 		for _, key in DICTIONARY_DESTRUCTOR_KEYS do
 			if
 				select(2, xpcall(function()
