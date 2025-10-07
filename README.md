@@ -22,8 +22,8 @@ Extend: (self: Destructor, once: boolean?) -> Destructor,                 -- Ret
 Add: <Value>(self: Destructor, value: Value, ...any) -> Value,            -- Adds `value` to the *Destructor*. If `value` is a *function*, it will be thunked with varargs `...`, and will throw an error if `Destruct` is executing.
 Remove: <Value>(self: Destructor, value: Value, all: boolean?) -> ...any, -- Removes the first value matching `value` from the *Destructor* and returns it if found. If `all` is *true*, all values matching `value` will be removed and returned, not just the first.
 Clear: (self: Destructor) -> (),                                          -- Removes all values from the *Destructor* without destructing them.
-Destruct: Destruct,                                                       -- Destructs and removes all values from the *Destructor*. Throws an error if called during execution.
-Destroy: Destruct                                                         -- Alias for the `Destruct` method.
+Destruct: (self: Destructor) -> (),                                       -- Destructs and removes all values from the *Destructor*. Throws an error if called during execution.
+Destroy: *Destruct                                                        -- Alias for the `Destruct` method.
 ```
 
 ---
