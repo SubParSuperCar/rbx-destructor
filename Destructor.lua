@@ -8,13 +8,13 @@ type Array = {any}
 
 type VarArgs<Type> = Type -- Sugar for variable arguments.
 
-type Iterator = (Destructor, UInt?) -> (UInt?, any)
+type Iterator = (Array, UInt?) -> (UInt?, any)
 type Destruct = (self: Destructor) -> ()
 
 type Implementation = {
 	__index: Implementation,
 	__len: (self: Destructor) -> UInt,
-	__iter: (self: Destructor) -> Iterator,
+	__iter: (self: Destructor) -> (Iterator, Array),
 	IsDestructor: (value: any) -> boolean, -- Returns a *boolean* indicating whether `value` is a *Destructor*.
 	new: (_values: Array?) -> Destructor, -- Returns a new *Destructor* object.
 	Extend: (self: Destructor, once: boolean?) -> Destructor, -- Returns a new sub-*Destructor* object that calls `Destruct` when the parent *Destructor* `self` calls `Destruct`. If `once` is *true*, `Destruct` will only be called once.
@@ -44,7 +44,7 @@ function Destructor:__len(): UInt
 	return #self._Values
 end
 
-function Destructor:__iter(): Iterator
+function Destructor:__iter(): (Iterator, Array)
 	return next, self._Values
 end
 
