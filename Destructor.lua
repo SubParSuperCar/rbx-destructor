@@ -3,17 +3,17 @@
 local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for successful destructor.
 local PERSISTER_MAX_DEPTH = 3 -- Consecutive Persister call limit to prevent cyclic re-entry hangs. (*1)
 
-type UnsignedInteger = number -- [0 .. ∞)
+type UInt = number -- [0 .. ∞)
 type Array = {any}
 
 type VarArgs<Type> = Type -- Sugar for variable arguments.
 
-type Iterator = (Destructor, UnsignedInteger?) -> (UnsignedInteger?, any)
+type Iterator = (Destructor, UInt?) -> (UInt?, any)
 type Destruct = (self: Destructor) -> ()
 
 type Implementation = {
 	__index: Implementation,
-	__len: (self: Destructor) -> UnsignedInteger,
+	__len: (self: Destructor) -> UInt,
 	__iter: (self: Destructor) -> Iterator,
 	IsDestructor: (value: any) -> boolean, -- Returns a *boolean* indicating whether `value` is a *Destructor*.
 	new: (_values: Array?) -> Destructor, -- Returns a new *Destructor* object.
@@ -40,7 +40,7 @@ export type Destructor = typeof(
 local Destructor = {} :: Implementation
 Destructor.__index = Destructor
 
-function Destructor:__len(): UnsignedInteger
+function Destructor:__len(): UInt
 	return #self._Values
 end
 
@@ -73,18 +73,20 @@ function Destructor:Extend(once: boolean?): Destructor
 	local Persister: Persister
 
 	-- Define on separate line from assignment to preserve function name for traceback. (*4)
-	local function _DestructorEntryPersister(depth: UnsignedInteger?)
-		local depth = depth or 1
+	local function _DestructorEntryPersister(depth: UInt?)
+		depth = depth or 1
+
+		local values = self._Values
 
 		task.defer(xpcall, function()
-			self:Add(destructor)
-			self:Add(Persister)
+			table.insert(values, 1, destructor)
+			table.insert(values, 2, Persister)
 		end, function(message: string)
 			warn(debug.traceback(message))
 
 			-- *1
 			if depth ~= PERSISTER_MAX_DEPTH then
-				Persister(depth + 1)
+				Persister(depth :: any + 1)
 
 				return
 			end
