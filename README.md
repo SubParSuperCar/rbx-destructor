@@ -3,11 +3,11 @@
 ## Overview
 
 A simple, utilitarian, and lightweight **Lua*u* (Roblox) Class** for **destructing values** of the following supported types:
-- `Function (Callback)`
-- `Dictionary (OOP)`*
+- `Function (Callback Thunk)`
+- `Dictionary (OOP Class Struct)`*
 - `Thread`
 - `RBXScriptConnection`
-- `Instance`
+- `Instance (& Tween)`
 
 ---
 
@@ -126,4 +126,4 @@ local enabledChangedDestructor = Destructor.new();
 end)
 ```
 
-> **Note:** The above Source excerpt is outdated and does not properly utilize the new `Extend` and `Clear` methods. An updated Source will be put up as soon as one is available.
+> **Note:** The above Source excerpt is outdated and does not properly utilize the new `Extend` and `Clear` methods. An updated Source will be installed as soon as one is available.
