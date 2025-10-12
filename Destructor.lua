@@ -12,7 +12,7 @@
 				User ID #: 3607920651
 			GitHub:
 				Username: @SubParSuperCar
-		<No other contributors>
+		<No other Contributors>
 
 	Date(s):
 		Last Updated: 10/11/2025
@@ -20,7 +20,7 @@
 
 	Version:
 		Semantic: "v2.1"
-		GitHub Commit #: 130
+		Preceding GitHub Commit: "52090e1"
 
 	--[[
 		!! DON'T KNOW HOW to USE this Module?? PLEASE READ our Documentation via the URL(s) BELOW to LEARN HOW !!
@@ -28,7 +28,7 @@
 	]]
 	Link(s):
 		GitHub Repository: https://github.com/SubParSuperCar/rbx-destructor
-		Roblox Dev Forum Topic: <No topic created>
+		Roblox Dev Forum Topic: <No Topic created>
 ]=]
 
 local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for successful destructor.
