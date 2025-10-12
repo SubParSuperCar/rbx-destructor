@@ -5,7 +5,7 @@
 A simple, utilitarian, and lightweight **Lua*u* (Roblox) Class** for **destructing values** of the following supported types:
 - `Function (Callback Thunk)`
 - `Dictionary (OOP Class Struct)`*
-- `Thread`
+- `Thread (& Coroutine)`
 - `RBXScriptConnection`
 - `Instance (& Tween)`
 
