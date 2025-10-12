@@ -1,5 +1,36 @@
 --!strict
---!native
+--[=[ Source Metadata:
+	Name(s):
+		Roblox Module: "Destructor"
+		GitHub Repository: "rbx-destructor"
+
+	Contributor(s):
+		Contributor #1:
+			Roblox:
+				Username: @SubParSuperCar
+				Display Name: "Noodle"
+				User ID #: 3607920651
+			GitHub:
+				Username: @SubParSuperCar
+		<No other contributors>
+
+	Date(s):
+		Last Updated: 10/11/2025
+		Created: 4/25/2024
+
+	Version:
+		Semantic: "v2.1"
+		GitHub Commit #: 130
+
+	--[[
+		!! DON'T KNOW HOW to USE this Module?? PLEASE READ our Documentation via the URL(s) BELOW to LEARN HOW !!
+		Please check our Distributor(s) periodically and/or subscribe to the Roblox Dev Forum Topic to stay on the latest Version.
+	]]
+	Link(s):
+		GitHub Repository: https://github.com/SubParSuperCar/rbx-destructor
+		Roblox Dev Forum Topic: <No topic created>
+]=]
+
 local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for successful destructor.
 local THROW_WARNING_NO_DESTRUCTOR = true -- Throw warning if no destructor for data type.
 
@@ -270,3 +301,5 @@ end
 Destructor.Destroy = Destructor.Destruct
 
 return Destructor
+--[=[ Signature: ]]																																																																3607920651 ]=]--
+--
