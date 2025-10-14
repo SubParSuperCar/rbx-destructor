@@ -20,7 +20,7 @@
 
 	Version:
 		Semantic: "v2.1"
-		Preceding GitHub Commit: "52090e1"
+		Preceding GitHub Repository Commit: "52090e1"
 
 	--[[
 		!! DON'T KNOW HOW to USE this Module?? PLEASE READ our Documentation via the URL(s) BELOW to LEARN HOW !!
