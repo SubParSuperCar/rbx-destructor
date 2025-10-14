@@ -4,7 +4,7 @@
 
 A simple, utilitarian, and lightweight **Lua*u* (Roblox) Class** for **destructing values** of the following supported types:
 - `Function (Callback Thunk)`
-- `Dictionary (OOP Class Struct)`*
+- `Dictionary (OOP Class Object)`*
 - `Thread (& Coroutine)`
 - `RBXScriptConnection`
 - `Instance (& Tween)`
@@ -30,19 +30,15 @@ Destroy: *Destruct                                                        -- Ali
 
 ## Details
 
-- You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its arguments (variadic).
-
+- You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its variadic arguments.
 - Tweens are destructed by using `Tween:Pause()` before `Instance:Destroy()`.
-
-- While destruction is in progress, `Destructor.Add` (with callbacks) and `Destructor.Destruct` cannot be called. This prevents infinite cyclic loops caused by callbacks re-adding themselves.
-
+- While destruction is executing, `Destructor.Add` (with callbacks) and `Destructor.Destruct` cannot be called. This prevents infinite cyclic loops caused by callbacks re-adding themselves.
 - `Destructor.Destruct` uses a function pool map (a dictionary of destructors indexed by their associated type names) instead of an `if-elseif` statement chain for more consistent compute times across supported types.
-
 - This class was inspired by other similar alternatives such as [Maid](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [Janitor](https://github.com/howmanysmall/Janitor), and [Trove](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau). It was written in the Spring of 2024 to satisfy my own needs, including some conservative wants.
 
 ---
 
-> **Note:** I haven't benchmarked this module's performance. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations, please submit a Pull Request, and it may be merged. ***Thank you.***
+> **Note:** I haven't benchmarked this module's performance. Identifying and implementing micro-optimizations to shave off a few microseconds of compute time wasn't a priority during writing. If you have any reasonable optimizations or bug fixes, please submit a Pull Request, and it may be merged. ***Thank you.***
 
 ---
 
@@ -126,4 +122,4 @@ local enabledChangedDestructor = Destructor.new();
 end)
 ```
 
-> **Note:** The above Source excerpt is outdated and does not properly utilize the new `Extend` and `Clear` methods. An updated Source will be installed as soon as one is available.
+> **Note:** The above Source excerpt is outdated and does not exemplify the new `Extend` and `Clear` methods. An updated Source will be installed as soon as one is available.
