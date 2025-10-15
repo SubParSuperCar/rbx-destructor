@@ -2,18 +2,20 @@
 
 ## Overview
 
-A simple, utilitarian, and lightweight **Lua*u* (Roblox) Class** for **destructing values** of the following supported types:
+A minimalist, utilitarian, and lightweight **Lua*u* (Roblox) Class** featuring a *practical* API for **destructing values** of the following *supported* types:
+- `Instance (& Tween)`
+- `RBXScriptConnection`
 - `Function (Callback Thunk)`
 - `Dictionary (OOP Class Object)`*
 - `Thread (& Coroutine)`
-- `RBXScriptConnection`
-- `Instance (& Tween)`
 
----
+This Class is intended as a commonized and expandable *convenience* utility for eliminating the need to manually reference and handle object destruction in your code. Just instantiate a `Destructor` object, add your values as you go, and then call the `Destruct` or `Destroy` method when you are all done; you can even recycle the object for repeated destruction cycles!
+
+If you do a lot of Lua*u* programming, we encourage you to give it a try, and we are confident that you will be hooked!
 
 ## API
 
-The API schema (i.e., implementation) is comprised of the following 8 members:
+The **API schema** (i.e., implementation) is comprised of the following **8 members**:
 
 ```lua
 IsDestructor: (value: any) -> boolean,                                    -- Returns a *boolean* indicating whether `value` is a *Destructor*.
