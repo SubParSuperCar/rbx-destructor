@@ -5,8 +5,8 @@
 A minimalist, utilitarian, and lightweight **Lua*u* (Roblox) Class** featuring a *practical* API for **destructing values** of the following *supported* types:
 - `Instance (& Tween)`
 - `RBXScriptConnection`
-- `Function (Callback Thunk)`
-- `Dictionary (OOP Class Object)`*
+- `Function (Callback / Thunk)`
+- `Dictionary (Class Object)`*
 - `Thread (& Coroutine)`
 
 This Class is intended as a commonized and expandable *convenience* utility for eliminating the need to manually reference and handle object destruction in your code. Just instantiate a `Destructor` object, add your values as you go, and then call the `Destruct` or `Destroy` method when you are all done; you can even recycle the object for repeated destruction cycles!
@@ -33,9 +33,10 @@ Destroy: *Destruct                                                        -- Ali
 ## Details
 
 - You can schedule callbacks to execute during destruction by calling `Destructor.Add` with a function and its variadic arguments.
-- Tweens are destructed by using `Tween:Pause()` before `Instance:Destroy()`.
+- Tweens are destructed using `Tween:Pause()` before `Instance:Destroy()`.
 - While destruction is executing, `Destructor.Add` (with callbacks) and `Destructor.Destruct` cannot be called. This prevents infinite cyclic loops caused by callbacks re-adding themselves.
 - `Destructor.Destruct` uses a function pool map (a dictionary of destructors indexed by their associated type names) instead of an `if-elseif` statement chain for more consistent compute times across supported types.
+- By default, if a value does not have a destructor for its type, a warning will be thrown. This behavior can be toggled via the constant near the top of the Source. We recommend resolving these warnings as adding indestructible values increases memory pressure.
 - This class was inspired by other similar alternatives such as [Maid](https://github.com/Quenty/NevermoreEngine/blob/main/src/maid/src/Shared/Maid.lua), [Janitor](https://github.com/howmanysmall/Janitor), and [Trove](https://github.com/Sleitnick/RbxUtil/blob/main/modules/trove/init.luau). It was written in the Spring of 2024 to satisfy my own needs, including some conservative wants.
 
 ---
@@ -44,7 +45,7 @@ Destroy: *Destruct                                                        -- Ali
 
 ---
 
-**Dictionaries are destructed by invoking their `Destroy` or `Destruct` key with itself as the argument if it exists and is a function.*
+**By default, dictionaries are destructed by invoking their `Destroy` or `Destruct` key with itself as the argument if it exists and is a function. You may change these keys via the constant near the top of the Source.*
 
 ---
 
