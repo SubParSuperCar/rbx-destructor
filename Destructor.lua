@@ -1,6 +1,8 @@
 --!strict
 --[=[ Source Metadata:
-	Name(s):
+	-- DON'T WANT this Docstring? Delete it. It WON'T AFFECT bytecode compilation output and performance.
+
+	Alias(es):
 		Roblox Module: "Destructor"
 		GitHub Repository: "rbx-destructor"
 
@@ -12,23 +14,22 @@
 				User ID #: 3607920651
 			GitHub:
 				Username: @SubParSuperCar
-		<No other Contributors>
 
-	Date(s):
-		Last Updated: 10/11/2025
+	Timestamp(s) (PT):
+		Last Commited: 10/15/2025
 		Created: 4/25/2024
 
-	Version:
-		Semantic: "v2.1"
-		Preceding GitHub Repository Commit: "1da2435"
+	Versioning:
+		Semantic Major-Minor Version: "v2.1"
+		Preceding GitHub Repository Commit: "9f51a5f"
 
 	--[[
 		!! DON'T KNOW HOW to USE this Module?? PLEASE READ our Documentation via the URL(s) BELOW to LEARN HOW !!
 		Please check our Distributor(s) periodically and/or subscribe to the Roblox Dev Forum Topic to stay on the latest Version.
 	]]
-	Link(s):
-		GitHub Repository: https://github.com/SubParSuperCar/rbx-destructor
-		Roblox Dev Forum Topic: <No Topic created>
+	Link(s) (https://):
+		GitHub Repository: github.com/SubParSuperCar/rbx-destructor
+		Roblox Dev Forum Topic: devforum.roblox.com/u/subparsupercar/activity/topics
 ]=]
 
 local DICTIONARY_DESTRUCTOR_KEYS = {"Destruct", "Destroy"} -- Key(s) to index dictionary for successful destructor.
@@ -104,6 +105,7 @@ function Destructor:Extend(once: boolean?): Destructor
 		return destructor
 	end
 
+	-- Use persister entry instead of discrete reference via property to minimize memory pressure.
 	-- Pack table.insert arguments for brevity.
 	local Persister: Persister, ArgumentPackages: {Array}
 
