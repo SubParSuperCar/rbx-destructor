@@ -2,7 +2,7 @@
 
 ## Overview
 
-A minimalist, utilitarian, and lightweight **Luau (Roblox) Class** providing a *practical* API for **destructing values** of the following supported types:
+A minimalist, utilitarian, and lightweight **Lua*u* (Roblox) Class** providing a *practical* API for **destructing values** of the following supported types:
 - `Instance (& Tween)`
 - `RBXScriptConnection`
 - `Function (Callback / Thunk)`
