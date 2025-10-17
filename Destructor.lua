@@ -20,14 +20,14 @@
 		Created: 4/25/2024
 
 	Versioning:
-		Semantic Major-Minor Version: "v2.1"
+		Semantic Version: "v2.1" -- v<Major>.<Minor>
 		Preceding GitHub Repository Commit: "9f51a5f"
 
 	--[[
 		!! DON'T KNOW HOW to USE this Module?? PLEASE READ our Documentation via the URL(s) BELOW to LEARN HOW !!
 		Please check our Distributor(s) periodically and/or subscribe to the Roblox Dev Forum Topic to stay on the latest Version.
 	]]
-	Link(s) (https://):
+	Link(s) (URL, HTTPS):
 		GitHub Repository: github.com/SubParSuperCar/rbx-destructor
 		Roblox Dev Forum Topic: devforum.roblox.com/u/subparsupercar/activity/topics
 ]=]
